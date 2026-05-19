@@ -1,6 +1,6 @@
 """Service fingerprinting on top of a single HTTP response.
 
-This is intentionally narrower than `aimap` — aimap covers 36 services
+This is intentionally narrower than `aimap`: aimap covers 36 services
 with deep enumerators. Atlas only needs to identify the half-dozen
 shapes that produce useful graph nodes. If aimap is on PATH the bootstrap
 will prefer it; this module is the fallback so a fresh clone still

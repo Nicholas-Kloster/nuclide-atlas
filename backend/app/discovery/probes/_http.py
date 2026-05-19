@@ -2,7 +2,7 @@
 
 httpx is a hard dep of the backend, but the discovery layer pretends it
 isn't there so the bootstrap CLI can run with bare `python3`. Keeping
-this file small on purpose — it is not an HTTP library.
+this file small on purpose: it is not an HTTP library.
 """
 
 from __future__ import annotations

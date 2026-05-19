@@ -1,12 +1,12 @@
 """Probe subsystem.
 
 Probes are **scoped to endpoints declared in the loaded config**. This
-service is an internal-observability sidecar, not a discovery scanner —
-it will not reach for hosts you did not tell it about.
+service is an internal-observability sidecar, not a discovery scanner.
+It will not reach for hosts you did not tell it about.
 
 Default probe payload assumes an OpenAI-compatible API:
-    GET  <baseUrl>/v1/models             — model listing
-    POST <baseUrl>/v1/chat/completions   — chat sanity-ping (optional)
+    GET  <baseUrl>/v1/models            : model listing
+    POST <baseUrl>/v1/chat/completions  : chat sanity-ping (optional)
 
 Override per-endpoint by setting `healthPath` in the config.
 """
@@ -34,8 +34,8 @@ class ProbeResult:
     raw_excerpt: str | None  # first ~500 chars of response, for debugging
 
 
-# Map known response body hints → provider strings. Cheap, intentional —
-# anything fancier belongs in aimap, not here.
+# Map known response body hints → provider strings. Cheap, intentional.
+# Anything fancier belongs in aimap, not here.
 _PROVIDER_HINTS: tuple[tuple[str, str], ...] = (
     ("openai", "openai"),
     ("anthropic", "anthropic"),
@@ -52,7 +52,7 @@ def _auth_header(endpoint: Endpoint) -> dict[str, str]:
     have the secret. The point is to send a plausible request; a 401 is
     still a useful result (endpoint is up, auth is enforced)."""
     # Real secrets are injected via env var ATLAS_PROBE_TOKEN_<endpoint id>
-    # at deployment time — we do not store credentials in the config file.
+    # at deployment time: we do not store credentials in the config file.
     import os
     token = os.environ.get(f"ATLAS_PROBE_TOKEN_{endpoint.id.upper()}")
     if not token:

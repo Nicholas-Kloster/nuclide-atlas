@@ -1,6 +1,6 @@
 """Orchestrate all probes and produce one DiscoveryResult.
 
-Each probe is fenced — a failure in `docker_ps` does not stop
+Each probe is fenced: a failure in `docker_ps` does not stop
 `local_ports`. The runner is deliberately synchronous and stdlib-only;
 parallelism happens inside each probe.
 """

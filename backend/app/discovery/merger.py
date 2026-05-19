@@ -17,7 +17,7 @@ Strategy:
 
 The output is then loaded by `config_loader.load_graph`, which validates
 against the strict Pydantic schema. If something we emitted doesn't pass
-validation, the bootstrap fails loud — that's the desired behavior.
+validation, the bootstrap fails loud: that's the desired behavior.
 """
 
 from __future__ import annotations
@@ -193,7 +193,7 @@ def merge(
 def to_yaml(g: _AssembledGraph, *, header: str | None = None) -> str:
     """Tiny, opinionated YAML emitter for the shapes we produce.
 
-    We don't need full YAML semantics — every value we emit is one of
+    We don't need full YAML semantics: every value we emit is one of
     str, int, float, bool, list, dict, or None. JSON is a strict YAML
     subset for the kinds of values we write, so the writer is essentially
     `json.dumps` with extra indentation.

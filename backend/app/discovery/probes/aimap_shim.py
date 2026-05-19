@@ -1,6 +1,6 @@
 """Optional aimap delegation.
 
-If `aimap` is on PATH we prefer it for URL probing — it carries deep
+If `aimap` is on PATH we prefer it for URL probing: it carries deep
 enumerators for ~36 services that this module does not. We hand it
 hosts as CIDR-of-one and parse its JSON output.
 

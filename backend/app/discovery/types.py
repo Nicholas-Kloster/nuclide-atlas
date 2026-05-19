@@ -1,7 +1,7 @@
 """Probe output types.
 
 Each probe returns a list of `Found*` records. These are intentionally
-loose dataclasses, not Pydantic models — they exist to flow between
+loose dataclasses, not Pydantic models: they exist to flow between
 probes and the merger without dragging a runtime dependency into the
 bootstrap script.
 
@@ -37,7 +37,7 @@ class FoundVectorStore:
 
 @dataclass
 class FoundObservability:
-    """MLflow / Langfuse / Phoenix etc. — the AI-ops tier."""
+    """MLflow / Langfuse / Phoenix etc.: the AI-ops tier."""
     url: str
     kind: str                          # mlflow, langfuse, phoenix
     source: str = ""

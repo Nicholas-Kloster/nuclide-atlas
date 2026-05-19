@@ -96,7 +96,7 @@ def run() -> tuple[
             )
         )
         # For every published port, attempt a fingerprint. We try a
-        # sensible health path per framework — same logic as the local
+        # sensible health path per framework: same logic as the local
         # ports probe but the framework is already known.
         for port in ports:
             health = _health_path_for(hint)

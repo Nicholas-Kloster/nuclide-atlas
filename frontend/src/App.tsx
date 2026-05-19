@@ -81,7 +81,7 @@ export function App() {
     void reloadAll();
   }, [reloadAll]);
 
-  // Live pulse — fire /api/probe every 15s when enabled, and once immediately
+  // Live pulse: fire /api/probe every 15s when enabled, and once immediately
   // on toggle so the user sees an effect.
   useEffect(() => {
     if (!livePulse) return;
@@ -94,7 +94,7 @@ export function App() {
           setPulsedAt(Date.now());
         }
       } catch {
-        /* swallow — pulse is best-effort */
+        /* swallow: pulse is best-effort */
       }
     };
     void fire();

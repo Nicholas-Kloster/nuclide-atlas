@@ -1,4 +1,4 @@
-"""Nuclide Atlas — canonical LLM-stack schema.
+"""Nuclide Atlas: canonical LLM-stack schema.
 
 These Pydantic v2 models are the single source of truth for the inspector's
 graph. The frontend mirrors them as TypeScript interfaces in
@@ -6,7 +6,7 @@ graph. The frontend mirrors them as TypeScript interfaces in
 
 Relations between entities are expressed as string ID references
 (`*Id` / `*Ids` fields), never as nested objects. This keeps the graph
-trivially traversable on both ends — the frontend's agent-path-highlight
+trivially traversable on both ends: the frontend's agent-path-highlight
 feature relies on it.
 """
 
@@ -96,7 +96,7 @@ class EntityType(str, Enum):
 
 class Architecture(_Base):
     """Model architecture metadata. Fields are optional because we won't
-    always know them — a closed OpenAI model exposes none of this."""
+    always know them: a closed OpenAI model exposes none of this."""
     num_layers: int | None = Field(default=None, alias="numLayers")
     hidden_size: int | None = Field(default=None, alias="hiddenSize")
     num_heads: int | None = Field(default=None, alias="numHeads")

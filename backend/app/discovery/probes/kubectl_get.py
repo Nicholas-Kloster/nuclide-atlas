@@ -1,7 +1,7 @@
 """Optional Kubernetes probe.
 
 Skipped silently if kubectl is not on PATH or no context is configured.
-We never pass `--all-namespaces` by default — the caller passes the
+We never pass `--all-namespaces` by default: the caller passes the
 namespace they want. Defaults to the current context's namespace.
 
 Output is intentionally shallow: one Deployment → one FoundContainer.

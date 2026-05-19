@@ -4,7 +4,7 @@ Reads a YAML or JSON file into a validated `Graph`. The path is taken from
 the `ATLAS_CONFIG` env var, defaulting to `/etc/nuclide-atlas/config.yaml`
 inside the container and `./config/atlas.yaml` for local runs.
 
-Validation is strict — the Pydantic models have `extra="forbid"`, so a
+Validation is strict: the Pydantic models have `extra="forbid"`, so a
 typo in a field name fails loud at startup instead of silently dropping
 data.
 """

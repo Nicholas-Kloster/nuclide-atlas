@@ -1,5 +1,5 @@
 """Probe `localhost` (and any extra hosts the caller passes) for the
-service catalog. This is the workhorse — the single move that lights up
+service catalog. This is the workhorse: the single move that lights up
 a graph for a developer who runs Ollama or vLLM on their laptop."""
 
 from __future__ import annotations

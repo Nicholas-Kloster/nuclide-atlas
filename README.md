@@ -5,7 +5,7 @@ See any LLM stack as a graph.
 Atlas finds the LLM services you are already running, draws them as a
 map, and lets you click anything to see what it is, what it touches,
 and what it is exposing. Point it at localhost, a URL, a Kubernetes
-namespace, or a YAML inventory — it renders the same way.
+namespace, or a YAML inventory. It renders the same way.
 
 ## Try it in 30 seconds, no infrastructure required
 
@@ -73,7 +73,7 @@ hosts you put in the config or hand to a probe. It does not scan, it
 does not move laterally, and it does not call home.
 
 For external discovery of LLM infrastructure you do not own, use
-[aimap](https://github.com/Nicholas-Kloster/aimap) — Atlas reads its
+[aimap](https://github.com/Nicholas-Kloster/aimap). Atlas reads its
 JSON output if you want to pipe one into the other.
 
 ## Architecture
@@ -86,7 +86,7 @@ JSON output if you want to pipe one into the other.
 The backend is the source of truth for the schema
 (`backend/app/models.py`). The frontend mirrors it in
 `frontend/src/lib/types.ts`. Discovery output validates through the
-same schema before being written to disk — drift fails loud at startup
+same schema before being written to disk. Drift fails loud at startup
 rather than silently.
 
 ## API
@@ -122,7 +122,7 @@ Probe credentials are env vars, never the YAML:
 ATLAS_PROBE_TOKEN_E-MY-ENDPOINT=...   # bearer / api_key for endpoint id
 ```
 
-A 401 from a credentialed probe is a useful result — it means the
+A 401 from a credentialed probe is a useful result. It means the
 endpoint is up and auth is enforced.
 
 ## Kubernetes
@@ -132,7 +132,7 @@ kubectl apply -k deploy/k8s
 kubectl -n nuclide-atlas port-forward svc/atlas-frontend 3000:3000
 ```
 
-The manifests under `deploy/k8s/` are a skeleton — `Deployment` +
+The manifests under `deploy/k8s/` are a skeleton: `Deployment` +
 `Service` for backend and frontend, plus a `ConfigMap` for the
 inventory. Add an Ingress, NetworkPolicy, and real resource limits
 before exposing outside the cluster.
@@ -163,7 +163,7 @@ identically in dev and inside `docker compose`.
 | Add an entity type             | `backend/app/models.py` → `frontend/src/lib/types.ts` → `graphBuild.ts` |
 | Add a discovery probe          | `backend/app/discovery/probes/` + register in `runner.py`             |
 | Plug in real metrics           | Replace `backend/app/metrics.py` (`MetricsSnapshot` is the contract)  |
-| Add a risk rule                | `backend/app/risk.py` — one if-statement per rule                     |
+| Add a risk rule                | `backend/app/risk.py`, one if-statement per rule                      |
 | Recognize a new framework      | `backend/app/discovery/probes/fingerprint.py` (`_PROVIDER_HINTS`)     |
 
 ## License

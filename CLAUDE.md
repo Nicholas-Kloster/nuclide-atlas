@@ -1,4 +1,4 @@
-# Nuclide Atlas — Claude Code Playbook
+# Nuclide Atlas: Claude Code Playbook
 
 You are running inside a clone of `nuclide-atlas`. Your job: get the user
 to a browser at `http://localhost:3000` showing a graph of their LLM

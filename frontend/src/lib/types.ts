@@ -1,4 +1,4 @@
-// Mirror of backend/app/models.py. Keep these in sync — the backend
+// Mirror of backend/app/models.py. Keep these in sync: the backend
 // returns these shapes verbatim with camelCase aliases.
 
 export type ProviderType =

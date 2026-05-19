@@ -6,12 +6,12 @@ the UI renders consistent numbers across reloads instead of flickering.
 TODO(prod): swap `_snapshot` for a real backend. Two natural integration
 points:
 
-  * Prometheus — query histogram_quantile() on
+  * Prometheus: query histogram_quantile() on
     `llm_request_duration_seconds_bucket{deployment_id="…"}`
-  * vLLM/TGI native /metrics endpoints — scrape and aggregate per
+  * vLLM/TGI native /metrics endpoints: scrape and aggregate per
     deployment id (most frameworks emit Prometheus text format already).
 
-The shape of `MetricsSnapshot` is the contract — keep it stable when
+The shape of `MetricsSnapshot` is the contract: keep it stable when
 plugging in real data.
 """
 

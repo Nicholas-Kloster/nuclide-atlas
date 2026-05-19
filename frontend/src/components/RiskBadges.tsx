@@ -19,7 +19,7 @@ export function RiskBadges({ findings }: Props) {
           key={i}
           className="risk-badge"
           style={{ background: COLOR[f.severity] }}
-          title={`${f.ruleId} — ${f.message}`}
+          title={`${f.ruleId}: ${f.message}`}
         >
           {f.severity === 'high' ? '!' : f.severity === 'warn' ? '~' : 'i'}{' '}
           {f.message}

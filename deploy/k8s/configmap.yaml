@@ -6,7 +6,7 @@ metadata:
 data:
   # Replace this block with your real stack description. The shape must
   # validate against backend/app/models.py. The sample below is what the
-  # compose stack ships with — strip it and write your own before
+  # compose stack ships with. Strip it and write your own before
   # rolling this to a cluster you care about.
   config.yaml: |
     models: []

@@ -1,17 +1,17 @@
 """Rule-based risk badges.
 
 Returns a list of `RiskFinding` per entity. Rules are intentionally
-small, deterministic, and traceable to a single field — no scoring
+small, deterministic, and traceable to a single field: no scoring
 black box. The UI renders each finding as a colored badge with the rule
 id on hover.
 
 Categories:
-  exposed        — internal API with no auth
-  unencrypted    — http:// for production-tier deployment
-  large-context  — model maxContext > 32k (worth a hover note, not a warning)
-  no-rerank      — RAG with k > 10 and no rerankers (recall/precision risk)
-  unbounded      — deployment with no maxTokens cap
-  open-prompt    — safety policy with zero filters
+  exposed       : internal API with no auth
+  unencrypted   : http:// for production-tier deployment
+  large-context : model maxContext > 32k (worth a hover note, not a warning)
+  no-rerank     : RAG with k > 10 and no rerankers (recall/precision risk)
+  unbounded     : deployment with no maxTokens cap
+  open-prompt   : safety policy with zero filters
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def evaluate(graph: Graph) -> list[RiskFinding]:
                 EntityType.rag_pipeline, r.id,
                 "no_rerank.high_k",
                 "warn",
-                f"k={r.retrieval.k} with no reranker — precision likely poor",
+                f"k={r.retrieval.k} with no reranker: precision likely poor",
             ))
 
     for p in graph.safety_policies:

@@ -1,4 +1,4 @@
-// Query Flow — animate a hypothetical user query traversing the graph.
+// Query Flow: animate a hypothetical user query traversing the graph.
 //
 // Starting from an Agent, the trace visits, in order:
 //   1. Agent's safety policy (pre-prompt filter step)
@@ -6,11 +6,11 @@
 //   3. Tools available to the agent
 //   4. The agent's primary model
 //   5. The deployments serving that model and their endpoints
-//   6. Back to the safety policy (post-response filter step) — by visiting
+//   6. Back to the safety policy (post-response filter step): by visiting
 //      its id again, the pulse animation lights it twice, which reads as
 //      "pre- and post- pass," same way a real request would flow.
 //
-// The path is an ordered list of node ids — the App accumulates them on
+// The path is an ordered list of node ids: the App accumulates them on
 // a timer, so each id lights up in sequence.
 
 import { nodeId } from './graphBuild';

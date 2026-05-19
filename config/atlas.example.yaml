@@ -1,4 +1,4 @@
-# Nuclide Atlas — example stack.
+# Nuclide Atlas: example stack.
 #
 # This file is what a fresh clone renders before `bin/atlas-bootstrap`
 # discovers your real infrastructure. Edit it, replace it, or delete it
