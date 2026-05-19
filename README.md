@@ -1,11 +1,51 @@
+[![Claude Code Friendly](https://img.shields.io/badge/Claude_Code-Friendly-blueviolet?logo=anthropic&logoColor=white)](https://claude.ai/code)
+
+<p align="center">
+  <img src="screenshots/banner.svg" alt="Nuclide Atlas banner">
+</p>
+
 # Nuclide Atlas
 
-See any LLM stack as a graph.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/Nicholas-Kloster/nuclide-atlas)](https://github.com/Nicholas-Kloster/nuclide-atlas/releases)
+[![Release pipeline](https://github.com/Nicholas-Kloster/nuclide-atlas/actions/workflows/release.yml/badge.svg)](https://github.com/Nicholas-Kloster/nuclide-atlas/actions/workflows/release.yml)
+[![ghcr.io](https://img.shields.io/badge/ghcr.io-published-2db2bf?logo=docker&logoColor=white)](https://github.com/Nicholas-Kloster/nuclide-atlas/pkgs/container/nuclide-atlas-backend)
+[![Stars](https://img.shields.io/github/stars/Nicholas-Kloster/nuclide-atlas)](https://github.com/Nicholas-Kloster/nuclide-atlas/stargazers)
 
-Atlas finds the LLM services you are already running, draws them as a
-map, and lets you click anything to see what it is, what it touches,
-and what it is exposing. Point it at localhost, a URL, a Kubernetes
-namespace, or a YAML inventory. It renders the same way.
+**See any LLM stack as a graph.** Atlas finds the LLM services you are
+already running, draws them as a map, and lets you click anything to
+see what it is, what it touches, and what it is exposing. Point it at
+localhost, a URL, a Kubernetes namespace, or a YAML inventory. It
+renders the same way.
+
+## Why Atlas exists
+
+Every team running modern AI has a stack they cannot fully describe.
+The reasons are familiar:
+
+- A data scientist stands up Ollama on a dev VM "just to test," and it
+  ends up on the corporate VPN with three models loaded.
+- A platform team deploys vLLM behind an internal load balancer, and
+  the only documentation is a Helm chart and a screenshot in Slack.
+- An agent framework wires four tools and two RAG pipelines together,
+  and no one outside the team can explain which one of them touches
+  customer data.
+- Compliance asks "what does the support agent reach?" and the answer
+  is twenty minutes of reading agent YAML, Helm values, and Python
+  config classes.
+
+Inventory tools assume you already know the inventory. Agent
+frameworks document themselves at the framework level, not the
+deployment level. Generic dashboards (Grafana, Datadog) show metrics
+but not topology. Nothing renders the wiring.
+
+Atlas does. Point it at the running stack, get a graph. Click any
+node, see what it is. Click an Agent, see the blast radius. The map
+becomes the documentation.
+
+<p align="center">
+  <img src="screenshots/ui-overview.png" alt="Atlas rendering an example stack" width="900">
+</p>
 
 ## Try it in 30 seconds, no infrastructure required
 
@@ -100,6 +140,11 @@ one canonical place to look. Read once, link forever.
 - **Trace what an agent touches.** Click an Agent → "Highlight path"
   dims everything outside its blast radius. Useful for compliance
   reviews ("if this agent leaks, what data was within reach?").
+
+<p align="center">
+  <img src="screenshots/ui-agent-highlight.png" alt="Atlas highlighting an agent's blast radius" width="900">
+</p>
+
 - **Watch a query flow.** Click an Agent → "Trace query" animates a
   request from agent through safety → RAG → tools → model → endpoints
   → back through safety.
