@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atlas-config
+  namespace: nuclide-atlas
+data:
+  # Replace this block with your real stack description. The shape must
+  # validate against backend/app/models.py. The sample below is what the
+  # compose stack ships with — strip it and write your own before
+  # rolling this to a cluster you care about.
+  config.yaml: |
+    models: []
+    deployments: []
+    endpoints: []
+    vectorIndexes: []
+    ragPipelines: []
+    tools: []
+    safetyPolicies: []
+    agents: []

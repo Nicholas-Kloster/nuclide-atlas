@@ -1,0 +1,185 @@
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --panel-2: #1c232c;
+  --line: #2a3340;
+  --fg: #d6dee7;
+  --fg-mute: #8b97a3;
+  --accent: #2db2bf;
+  --accent-soft: rgba(45, 178, 191, 0.15);
+  --node-model: #4f7eff;
+  --node-deployment: #38b870;
+  --node-endpoint: #d98b2a;
+  --node-rag: #b063e0;
+  --node-vector: #8a6dff;
+  --node-tool: #2db2bf;
+  --node-agent: #d04d6a;
+  --node-safety: #c9a02f;
+  --hl: #fff7c2;
+  --hl-edge: #ffd866;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.atlas-shell {
+  display: grid;
+  grid-template-rows: 48px 1fr;
+  height: 100vh;
+}
+
+.atlas-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.atlas-header h1 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.atlas-header .muted { color: var(--fg-mute); font-size: 12px; }
+
+.atlas-body {
+  display: grid;
+  grid-template-columns: 220px 1fr 360px;
+  min-height: 0;
+}
+
+.atlas-filters {
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 12px;
+  overflow: auto;
+}
+.atlas-filters h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  margin: 4px 0 8px;
+  letter-spacing: 0.08em;
+}
+.atlas-filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+.atlas-filters .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.atlas-canvas { background: var(--bg); min-width: 0; }
+
+.atlas-detail {
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px;
+  overflow: auto;
+}
+.atlas-detail h2 {
+  font-size: 14px;
+  margin: 0 0 4px;
+}
+.atlas-detail .kind {
+  font-size: 11px;
+  color: var(--fg-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.atlas-detail pre {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  overflow: auto;
+}
+.atlas-detail .metric-card {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+.atlas-detail .metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 2px 0;
+}
+.atlas-detail .metric-row span:first-child { color: var(--fg-mute); }
+.atlas-detail button.action {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.atlas-detail button.action:hover { background: var(--accent); color: #0d1117; }
+
+.atlas-empty {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-mute);
+  font-size: 12px;
+  text-align: center;
+  padding: 12px;
+}
+
+/* React Flow tweaks */
+.react-flow__node {
+  font-size: 11px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-width: 120px;
+  color: var(--fg);
+}
+.react-flow__node.selected {
+  outline: 2px solid var(--accent);
+}
+.react-flow__node.path-on {
+  outline: 2px solid var(--hl);
+  box-shadow: 0 0 0 2px rgba(255, 247, 194, 0.2);
+}
+.react-flow__node.path-off { opacity: 0.25; }
+
+.node-title { font-weight: 600; }
+.node-sub { font-size: 10px; color: var(--fg-mute); }
+
+.react-flow__edge-path { stroke: var(--line); stroke-width: 1.2; }
+.react-flow__edge.path-on .react-flow__edge-path { stroke: var(--hl-edge); stroke-width: 2; }
+.react-flow__edge.path-off .react-flow__edge-path { opacity: 0.2; }
+
+.atlas-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--fg-mute);
+  margin-right: 4px;
+}

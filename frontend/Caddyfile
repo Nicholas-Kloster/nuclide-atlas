@@ -1,0 +1,17 @@
+{
+    auto_https off
+    admin off
+}
+
+:3000 {
+    root * /srv
+    encode zstd gzip
+
+    # API proxy → backend service. The hostname `atlas-backend` matches
+    # the docker-compose / k8s service name; override with API_BASE env.
+    @api path /api/*
+    reverse_proxy @api {$API_BASE:atlas-backend:8000}
+
+    try_files {path} /index.html
+    file_server
+}

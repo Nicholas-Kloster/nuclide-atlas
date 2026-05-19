@@ -1,0 +1,23 @@
+services:
+  atlas-backend:
+    build:
+      context: ./backend
+    image: nuclide-atlas-backend:0.1.0
+    environment:
+      ATLAS_CONFIG: /etc/nuclide-atlas/config.yaml
+      ATLAS_CORS_ORIGINS: "http://localhost:3000"
+    volumes:
+      - ./config/atlas.yaml:/etc/nuclide-atlas/config.yaml:ro
+    ports:
+      - "8000:8000"
+
+  atlas-frontend:
+    build:
+      context: ./frontend
+    image: nuclide-atlas-frontend:0.1.0
+    environment:
+      API_BASE: "atlas-backend:8000"
+    depends_on:
+      - atlas-backend
+    ports:
+      - "3000:3000"

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atlas-frontend
+  namespace: nuclide-atlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: atlas-frontend }
+  template:
+    metadata:
+      labels: { app: atlas-frontend }
+    spec:
+      containers:
+        - name: frontend
+          image: nuclide-atlas-frontend:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: API_BASE
+              value: "atlas-backend:8000"
+          resources:
+            requests: { cpu: 25m, memory: 32Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atlas-frontend
+  namespace: nuclide-atlas
+spec:
+  type: ClusterIP
+  selector: { app: atlas-frontend }
+  ports:
+    - port: 3000
+      targetPort: 3000

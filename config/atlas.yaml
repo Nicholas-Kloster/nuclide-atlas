@@ -1,0 +1,247 @@
+# Nuclide Atlas — sample stack.
+#
+# Edit this file (or point ATLAS_CONFIG at your own) to describe the LLM
+# infrastructure you want the inspector to render. Every ID is local —
+# the schema joins on them, not on names.
+#
+# camelCase keys match the spec. snake_case also works.
+
+models:
+  - id: m-flagship
+    name: nuclide-flagship-13b
+    version: "2026.05.1"
+    providerType: custom
+    architecture:
+      numLayers: 40
+      hiddenSize: 5120
+      numHeads: 40
+      vocabSize: 128000
+      maxContext: 32768
+      quantization: bf16
+    training:
+      baseModel: llama-3-8b
+      fineTuningType: full-sft + dpo
+      createdAt: "2026-03-12T09:00:00Z"
+      tags: [chat, code, redteam]
+
+  - id: m-embed
+    name: bge-large-en-v1.5
+    providerType: huggingface
+    architecture:
+      numLayers: 24
+      hiddenSize: 1024
+      maxContext: 512
+    training:
+      baseModel: bge-large-en-v1.5
+      fineTuningType: none
+      tags: [embedding]
+
+  - id: m-safety
+    name: nuclide-guardrail-3b
+    providerType: custom
+    architecture:
+      numLayers: 28
+      hiddenSize: 3072
+      maxContext: 8192
+    training:
+      baseModel: llama-3-3b
+      fineTuningType: classifier-head
+      tags: [safety, moderation]
+
+deployments:
+  - id: d-flagship-prod
+    modelId: m-flagship
+    environment: prod
+    region: us-central1
+    inferenceFramework: vllm
+    resources:
+      numReplicas: 3
+      gpusPerReplica: 2
+      gpuType: A100-80G
+      totalVRAM: 480.0
+    configuration:
+      maxBatchSize: 64
+      maxTokens: 4096
+      temperatureMin: 0.0
+      temperatureMax: 1.5
+
+  - id: d-flagship-stage
+    modelId: m-flagship
+    environment: stage
+    region: us-central1
+    inferenceFramework: vllm
+    resources:
+      numReplicas: 1
+      gpusPerReplica: 1
+      gpuType: A100-80G
+      totalVRAM: 80.0
+    configuration:
+      maxBatchSize: 16
+      maxTokens: 4096
+
+  - id: d-embed-prod
+    modelId: m-embed
+    environment: prod
+    region: us-central1
+    inferenceFramework: tgi
+    resources:
+      numReplicas: 2
+      gpusPerReplica: 1
+      gpuType: L4
+      totalVRAM: 48.0
+    configuration:
+      maxBatchSize: 256
+
+  - id: d-safety-prod
+    modelId: m-safety
+    environment: prod
+    region: us-central1
+    inferenceFramework: vllm
+    resources:
+      numReplicas: 1
+      gpusPerReplica: 1
+      gpuType: A10G
+      totalVRAM: 24.0
+    configuration:
+      maxBatchSize: 64
+      maxTokens: 512
+
+endpoints:
+  - id: e-flagship-public
+    deploymentId: d-flagship-prod
+    type: publicAPI
+    protocol: https
+    url: https://api.example.internal
+    authType: bearer
+    supportedOperations: [chatCompletion, completion]
+    healthPath: /v1/models
+
+  - id: e-flagship-stage
+    deploymentId: d-flagship-stage
+    type: internalAPI
+    protocol: https
+    url: https://stage-llm.example.internal
+    authType: bearer
+    supportedOperations: [chatCompletion]
+    healthPath: /v1/models
+
+  - id: e-embed
+    deploymentId: d-embed-prod
+    type: internalAPI
+    protocol: http
+    url: http://embed.example.svc.cluster.local:8080
+    authType: none
+    supportedOperations: [embeddings]
+    healthPath: /info
+
+  - id: e-safety
+    deploymentId: d-safety-prod
+    type: internalAPI
+    protocol: http
+    url: http://safety.example.svc.cluster.local:8080
+    authType: none
+    supportedOperations: [chatCompletion]
+    healthPath: /v1/models
+
+vectorIndexes:
+  - id: v-docs
+    name: corpus-docs-v3
+    dbType: qdrant
+    collectionName: docs
+    embeddingDim: 1024
+    numDocuments: 184321
+    avgDocLength: 512.0
+
+  - id: v-tickets
+    name: support-tickets
+    dbType: weaviate
+    collectionName: Tickets
+    embeddingDim: 1024
+    numDocuments: 26110
+
+ragPipelines:
+  - id: r-docs
+    name: docs-rag
+    embeddingModelId: m-embed
+    vectorIndexId: v-docs
+    distanceMetric: cosine
+    retrieval:
+      k: 8
+      rerankers: [cross-encoder-mini]
+
+  - id: r-tickets
+    name: tickets-rag
+    embeddingModelId: m-embed
+    vectorIndexId: v-tickets
+    distanceMetric: cosine
+    retrieval:
+      k: 5
+
+tools:
+  - id: t-search-orders
+    name: search_orders
+    description: Look up an order by customer email or order ID.
+    backingService: sqlDb
+    inputSchema:
+      type: object
+      properties:
+        query: { type: string }
+      required: [query]
+    outputSchema:
+      type: object
+      properties:
+        results: { type: array }
+
+  - id: t-create-ticket
+    name: create_ticket
+    description: Open a support ticket on the user's behalf.
+    backingService: restApi
+    inputSchema:
+      type: object
+      properties:
+        title: { type: string }
+        body: { type: string }
+      required: [title, body]
+
+  - id: t-kg-lookup
+    name: kg_lookup
+    description: Resolve an entity in the internal knowledge graph.
+    backingService: knowledgeGraph
+    inputSchema:
+      type: object
+      properties:
+        entity: { type: string }
+      required: [entity]
+
+safetyPolicies:
+  - id: p-default
+    name: default-guardrails
+    prePromptFilters:
+      - name: pii-strip
+        description: Remove inbound PII before model invocation.
+      - name: jailbreak-pattern
+        description: Block known jailbreak prefixes.
+        pattern: "(?i)ignore (all )?previous"
+    postResponseFilters:
+      - name: profanity-mask
+        description: Mask profanity in outputs.
+      - name: refusal-coherence
+        description: Reject malformed refusals.
+    safetyModelId: m-safety
+
+agents:
+  - id: a-support
+    name: support-agent
+    role: customer support
+    primaryModelId: m-flagship
+    toolsUsed: [t-search-orders, t-create-ticket]
+    ragPipelinesUsed: [r-docs, r-tickets]
+    safetyPolicyId: p-default
+
+  - id: a-research
+    name: research-agent
+    role: internal knowledge worker
+    primaryModelId: m-flagship
+    toolsUsed: [t-kg-lookup]
+    ragPipelinesUsed: [r-docs]
+    safetyPolicyId: p-default
