@@ -1,117 +1,170 @@
 # Nuclide Atlas
 
-A self-deployable inspector for an LLM stack you already own. Atlas
-reads a YAML inventory of your models, deployments, endpoints, RAG
-pipelines, tools, and agents, then renders the whole thing as an
-interactive graph. It is meant to live as a sidecar to the stack it
-describes, not as an external scanner.
+See any LLM stack as a graph.
 
-Atlas does not discover infrastructure on its own. It only contacts
-endpoints listed in its config file.
+Atlas finds the LLM services you are already running, draws them as a
+map, and lets you click anything to see what it is, what it touches,
+and what it is exposing. Point it at localhost, a URL, a Kubernetes
+namespace, or a YAML inventory — it renders the same way.
+
+## Try it in 30 seconds, no infrastructure required
+
+```bash
+git clone https://github.com/Nicholas-Kloster/nuclide-atlas.git
+cd nuclide-atlas
+bin/atlas-demo            # spawns mock Ollama / vLLM / Qdrant on loopback
+                          # then runs bin/atlas-bootstrap
+# browser opens http://localhost:3000
+```
+
+## Use it on your real stack
+
+```bash
+bin/atlas-bootstrap       # auto-discovers everything Atlas can see
+```
+
+That command:
+
+1. Scans `OPENAI_API_BASE`, `OLLAMA_HOST`, `MLFLOW_TRACKING_URI`, and
+   peers for any base URLs already set.
+2. Sweeps a catalog of known LLM ports on localhost (`11434` Ollama,
+   `8000` vLLM, `8081` TGI, `6333` Qdrant, `8089` Weaviate,
+   `5000` MLflow, `3100` Langfuse, `6006` Phoenix, `7860` Gradio, …).
+3. Reads `docker ps` for containers running known LLM images.
+4. Optionally reads a Kubernetes namespace via `kubectl`.
+5. Writes the result to `config/atlas.yaml`.
+6. Boots the stack via `docker compose` and opens the browser.
+
+Exit codes are stable so CI / Claude Code can branch on them:
+`0` ok · `64` no services found · `65` no docker · `66` port busy.
+
+If `aimap` is on `PATH`, Atlas hands URL probes to it for richer
+fingerprinting; otherwise the built-in stdlib probes carry the load.
+
+## What you can actually do once it is open
+
+- **See the stack as one picture.** Endpoints → Deployments → Models →
+  RAG pipelines / Vector indexes / Tools → Agents. Edges are the wiring.
+- **Drill into anything.** Click a node, see its full config in the
+  right panel plus a metrics snapshot for serving entities.
+- **Trace what an agent touches.** Click an Agent → "Highlight path"
+  dims everything outside its blast radius. Useful for compliance
+  reviews ("if this agent leaks, what data was within reach?").
+- **Watch a query flow.** Click an Agent → "Trace query" animates a
+  request from agent through safety → RAG → tools → model → endpoints
+  → back through safety.
+- **Live pulse.** Toggle ● Live in the header and Atlas re-probes every
+  15 seconds, coloring endpoints green / amber / red.
+- **Risk badges.** Atlas runs deterministic rules and dots nodes that
+  fail them (internal API with no auth, RAG with high-k and no
+  reranker, safety policy with zero filters, …). Hover for the rule id.
+- **Search.** Type into the sidebar search box; everything that doesn't
+  match fades.
+- **Filter layers.** Toggle Tools, Vector, Safety on/off when you only
+  care about the serving path.
+- **Add a source on the fly.** `+ Add source` in the header opens a
+  modal that probes a URL, re-runs discovery, or accepts a list of
+  extra hosts.
+
+## What Atlas is, and is not
+
+Atlas is **internal observability** for an LLM stack. It only contacts
+hosts you put in the config or hand to a probe. It does not scan, it
+does not move laterally, and it does not call home.
+
+For external discovery of LLM infrastructure you do not own, use
+[aimap](https://github.com/Nicholas-Kloster/aimap) — Atlas reads its
+JSON output if you want to pipe one into the other.
 
 ## Architecture
 
-Two containers:
+| Service          | Port | Stack                                  |
+| ---------------- | ---- | -------------------------------------- |
+| `atlas-backend`  | 8000 | FastAPI · Pydantic v2 · stdlib probes  |
+| `atlas-frontend` | 3000 | Vite · React · @xyflow/react · dagre   |
 
-| Service          | Port | Purpose                                              |
-| ---------------- | ---- | ---------------------------------------------------- |
-| `atlas-backend`  | 8000 | FastAPI. Loads the config, runs probes, serves JSON. |
-| `atlas-frontend` | 3000 | React + React Flow UI. Proxies `/api/*` to backend.  |
-
-The backend is the source of truth for the schema (`backend/app/models.py`).
-Frontend types mirror it in `frontend/src/lib/types.ts`.
-
-## Quick start (docker-compose)
-
-```bash
-docker compose up --build
-# UI:        http://localhost:3000
-# API:       http://localhost:8000/api/graph
-# Probes:    http://localhost:8000/api/probe
-```
-
-The compose stack mounts `config/atlas.yaml` into the backend container.
-Edit that file to describe your own stack, or point `ATLAS_CONFIG` at a
-different path.
+The backend is the source of truth for the schema
+(`backend/app/models.py`). The frontend mirrors it in
+`frontend/src/lib/types.ts`. Discovery output validates through the
+same schema before being written to disk — drift fails loud at startup
+rather than silently.
 
 ## API
 
 ```
 GET  /api/healthz                       liveness
 GET  /api/graph                         full inventory
-GET  /api/probe                         run probes against every endpoint
-GET  /api/metrics/{entityType}/{id}     stubbed metrics snapshot
+GET  /api/probe                         run probes against declared endpoints
+GET  /api/metrics/{entityType}/{id}     stubbed metrics
+GET  /api/risk                          rule-based findings, per entity
+GET  /api/sources                       where the current config came from
+POST /api/discover                      re-run discovery, rewrite atlas.yaml
+POST /api/import-url    {"url": ...}    probe a URL, merge into atlas.yaml
 ```
 
 `entityType` is one of `model deployment endpoint ragPipeline vectorIndex tool agent safetyPolicy`.
 
 ## Configuration
 
-`config/atlas.yaml` is the entire system description. The example file
-ships a small fictional stack so the UI has something to render on
-first run:
+Two files in `config/`:
 
-- 3 models (flagship 13B, embedding, guardrail)
-- 4 deployments across `prod` and `stage`
-- 4 endpoints (1 public, 3 internal)
-- 2 RAG pipelines fed by 2 vector indexes
-- 3 tools, 2 agents, 1 safety policy
+| File                      | Role                                                        |
+| ------------------------- | ----------------------------------------------------------- |
+| `atlas.example.yaml`      | Committed sample. Renders on a fresh clone before discovery. |
+| `atlas.yaml`              | Auto-generated by bootstrap. Gitignored.                    |
 
-Strip it and write your own when you are ready.
+The backend prefers `atlas.yaml` and falls back to `atlas.example.yaml`,
+so you always have something to render.
 
-### Auth tokens for probes
-
-Probe credentials are read from environment variables at startup, never
-from the config file. Set one per endpoint id:
+Probe credentials are env vars, never the YAML:
 
 ```
-ATLAS_PROBE_TOKEN_E-FLAGSHIP-PUBLIC=...
+ATLAS_PROBE_TOKEN_E-MY-ENDPOINT=...   # bearer / api_key for endpoint id
 ```
 
-If no token is set for an endpoint, the probe still runs unauthenticated
-and reports the response. A 401 is a useful result.
+A 401 from a credentialed probe is a useful result — it means the
+endpoint is up and auth is enforced.
 
 ## Kubernetes
-
-The manifests under `deploy/k8s/` install Atlas into its own namespace.
-Edit `configmap.yaml` first to put your real inventory in. Then:
 
 ```bash
 kubectl apply -k deploy/k8s
 kubectl -n nuclide-atlas port-forward svc/atlas-frontend 3000:3000
 ```
 
-The manifests are a thin skeleton. Add an Ingress, NetworkPolicy, and
-real resource limits before exposing this outside the cluster.
+The manifests under `deploy/k8s/` are a skeleton — `Deployment` +
+`Service` for backend and frontend, plus a `ConfigMap` for the
+inventory. Add an Ingress, NetworkPolicy, and real resource limits
+before exposing outside the cluster.
 
-## Extending
-
-Adding a new entity type means three edits:
-
-1. New Pydantic model in `backend/app/models.py`, added to `Graph`.
-2. Matching TypeScript interface in `frontend/src/lib/types.ts`.
-3. Render block in `frontend/src/lib/graphBuild.ts` and a column in `COLUMN`.
-
-Adding a real metrics backend means swapping `backend/app/metrics.py`.
-The `MetricsSnapshot` shape is the contract; keep it stable.
-
-## Local development without containers
+## Local development
 
 ```bash
 # backend
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-ATLAS_CONFIG=../config/atlas.yaml uvicorn app.main:app --reload --port 8000
+ATLAS_CONFIG=../config/atlas.example.yaml \
+    uvicorn app.main:app --reload --port 8000
 
-# frontend (in another shell)
+# frontend (separate shell)
 cd frontend
 npm install
 npm run dev
 ```
 
-Vite proxies `/api/*` to `http://localhost:8000`, so the UI and API
-behave the same in dev and in compose.
+Vite proxies `/api/*` to `http://localhost:8000`, so the UI behaves
+identically in dev and inside `docker compose`.
+
+## Extending
+
+| Want to                        | Touch                                                                 |
+| ------------------------------ | --------------------------------------------------------------------- |
+| Add an entity type             | `backend/app/models.py` → `frontend/src/lib/types.ts` → `graphBuild.ts` |
+| Add a discovery probe          | `backend/app/discovery/probes/` + register in `runner.py`             |
+| Plug in real metrics           | Replace `backend/app/metrics.py` (`MetricsSnapshot` is the contract)  |
+| Add a risk rule                | `backend/app/risk.py` — one if-statement per rule                     |
+| Recognize a new framework      | `backend/app/discovery/probes/fingerprint.py` (`_PROVIDER_HINTS`)     |
 
 ## License
 

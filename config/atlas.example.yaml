@@ -1,10 +1,8 @@
-# Nuclide Atlas — sample stack.
+# Nuclide Atlas — example stack.
 #
-# Edit this file (or point ATLAS_CONFIG at your own) to describe the LLM
-# infrastructure you want the inspector to render. Every ID is local —
-# the schema joins on them, not on names.
-#
-# camelCase keys match the spec. snake_case also works.
+# This file is what a fresh clone renders before `bin/atlas-bootstrap`
+# discovers your real infrastructure. Edit it, replace it, or delete it
+# and run the bootstrap. Keys are camelCase to match the JSON contract.
 
 models:
   - id: m-flagship

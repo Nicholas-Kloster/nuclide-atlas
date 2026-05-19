@@ -19,10 +19,16 @@ import yaml
 
 from .models import Graph
 
+_REPO = Path(__file__).resolve().parents[2]
 DEFAULT_PATHS = (
     os.environ.get("ATLAS_CONFIG"),
+    # Production / container layout.
+    "/etc/nuclide-atlas/config/atlas.yaml",
+    "/etc/nuclide-atlas/config/atlas.example.yaml",
     "/etc/nuclide-atlas/config.yaml",
-    str(Path(__file__).resolve().parents[2] / "config" / "atlas.yaml"),
+    # Local development from a fresh clone.
+    str(_REPO / "config" / "atlas.yaml"),
+    str(_REPO / "config" / "atlas.example.yaml"),
 )
 
 

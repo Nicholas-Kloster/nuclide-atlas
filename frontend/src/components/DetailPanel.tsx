@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { fetchMetrics } from '../lib/api';
+import type { RiskFinding } from '../lib/api';
 import type { AnyEntity, EntityType, MetricsSnapshot } from '../lib/types';
+import { RiskBadges } from './RiskBadges';
 
 const METRIC_TYPES: ReadonlySet<EntityType> = new Set([
   'model',
@@ -23,9 +25,19 @@ interface Props {
   entity: AnyEntity | null;
   isAgentHighlighted: boolean;
   onToggleHighlight: () => void;
+  onTraceQuery: () => void;
+  isTracing: boolean;
+  risk: RiskFinding[];
 }
 
-export function DetailPanel({ entity, isAgentHighlighted, onToggleHighlight }: Props) {
+export function DetailPanel({
+  entity,
+  isAgentHighlighted,
+  onToggleHighlight,
+  onTraceQuery,
+  isTracing,
+  risk,
+}: Props) {
   if (!entity) {
     return (
       <aside className="atlas-detail">
@@ -33,7 +45,8 @@ export function DetailPanel({ entity, isAgentHighlighted, onToggleHighlight }: P
           Click a node to inspect it.
           <br />
           <br />
-          Click an Agent twice to highlight everything it touches.
+          On an Agent, "Highlight path" shows everything it touches.
+          "Trace query" animates a request through the graph.
         </div>
       </aside>
     );
@@ -47,10 +60,15 @@ export function DetailPanel({ entity, isAgentHighlighted, onToggleHighlight }: P
         <span className="atlas-pill">id: {entity.id}</span>
       </div>
 
+      <RiskBadges findings={risk} />
+
       {entity._type === 'agent' && (
-        <p style={{ margin: '10px 0' }}>
+        <p style={{ margin: '10px 0', display: 'flex', gap: 6 }}>
           <button className="action" onClick={onToggleHighlight}>
             {isAgentHighlighted ? 'Clear path' : 'Highlight path'}
+          </button>
+          <button className="action" onClick={onTraceQuery} disabled={isTracing}>
+            {isTracing ? 'Tracing…' : 'Trace query'}
           </button>
         </p>
       )}

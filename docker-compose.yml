@@ -4,10 +4,12 @@ services:
       context: ./backend
     image: nuclide-atlas-backend:0.1.0
     environment:
-      ATLAS_CONFIG: /etc/nuclide-atlas/config.yaml
       ATLAS_CORS_ORIGINS: "http://localhost:3000"
+    # Backend prefers /etc/nuclide-atlas/config/atlas.yaml, falls back to
+    # atlas.example.yaml — both live in this read-write mount so the
+    # `/api/discover` endpoint can rewrite atlas.yaml on demand.
     volumes:
-      - ./config/atlas.yaml:/etc/nuclide-atlas/config.yaml:ro
+      - ./config:/etc/nuclide-atlas/config
     ports:
       - "8000:8000"
 
