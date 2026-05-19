@@ -23,6 +23,15 @@ bin/atlas-demo            # spawns mock Ollama / vLLM / Qdrant on loopback
 bin/atlas-bootstrap       # auto-discovers everything Atlas can see
 ```
 
+### Or pull the published images
+
+```bash
+docker pull ghcr.io/nicholas-kloster/nuclide-atlas-backend:latest
+docker pull ghcr.io/nicholas-kloster/nuclide-atlas-frontend:latest
+```
+
+Multi-arch (amd64, arm64). See [Releases](https://github.com/Nicholas-Kloster/nuclide-atlas/releases) for tagged versions.
+
 That command:
 
 1. Scans `OPENAI_API_BASE`, `OLLAMA_HOST`, `MLFLOW_TRACKING_URI`, and

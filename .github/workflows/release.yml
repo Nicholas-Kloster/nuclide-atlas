@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.2.0)'
+        required: true
+
+permissions:
+  contents: write    # create GitHub Release
+  packages: write    # push images to ghcr.io
+
+jobs:
+  build-and-publish:
+    name: Build images and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+            echo "version=${{ inputs.tag }}" | sed 's/=v/=/' >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase owner for image refs
+        id: owner
+        run: echo "lower=$(echo '${{ github.repository_owner }}' | tr 'A-Z' 'a-z')" >> "$GITHUB_OUTPUT"
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-backend:${{ steps.tag.outputs.version }}
+            ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-backend:latest
+
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-frontend:${{ steps.tag.outputs.version }}
+            ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-frontend:latest
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.ref }}
+          name: ${{ steps.tag.outputs.ref }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          body: |
+            ## Container images
+
+            ```
+            docker pull ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-backend:${{ steps.tag.outputs.version }}
+            docker pull ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-frontend:${{ steps.tag.outputs.version }}
+            ```
+
+            Multi-arch (linux/amd64, linux/arm64).
+
+            ## Quick start
+
+            ```
+            git clone https://github.com/${{ github.repository }}.git
+            cd nuclide-atlas
+            bin/atlas-bootstrap         # discover + boot + open browser
+            ```
+
+            Or, for a zero-infrastructure demo:
+
+            ```
+            bin/atlas-demo              # spawn mock services on loopback
+            ```
+
+            ## Auto-generated notes
