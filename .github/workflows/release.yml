@@ -59,6 +59,11 @@ jobs:
           tags: |
             ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-backend:${{ steps.tag.outputs.version }}
             ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-backend:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=Nuclide Atlas backend (FastAPI + discovery)
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ steps.tag.outputs.version }}
 
       - name: Build & push frontend image
         uses: docker/build-push-action@v6
@@ -69,6 +74,11 @@ jobs:
           tags: |
             ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-frontend:${{ steps.tag.outputs.version }}
             ghcr.io/${{ steps.owner.outputs.lower }}/nuclide-atlas-frontend:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=Nuclide Atlas frontend (React + React Flow)
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ steps.tag.outputs.version }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
