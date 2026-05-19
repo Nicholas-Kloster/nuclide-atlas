@@ -50,6 +50,47 @@ Exit codes are stable so CI / Claude Code can branch on them:
 If `aimap` is on `PATH`, Atlas hands URL probes to it for richer
 fingerprinting; otherwise the built-in stdlib probes carry the load.
 
+## What it solves for developers
+
+**Onboarding.** A new hire pulls the repo, runs `bin/atlas-bootstrap`,
+and sees the whole stack in one screen. No "ask three people which
+model the support agent actually uses."
+
+**Local dev.** Atlas auto-discovers Ollama, vLLM, and the vector DB
+running on your laptop, draws the map, and lets you click "Trace
+query" to watch a request flow through it. The graph becomes your
+debugger when something silently breaks.
+
+**Blast-radius checks before merging.** Click an Agent, hit "Highlight
+path," and everything outside the agent's reach dims. The next time a
+PR adds a new tool to an agent, you can see exactly what access it
+gains before approving. Same view answers compliance reviews without
+spelunking through agent framework code.
+
+**Schema drift caught at startup.** Discovery output validates through
+the same Pydantic models the backend serves. If real infrastructure
+stops matching the YAML inventory, startup fails loud. The map cannot
+quietly lie.
+
+**Programmatic stack checks.** `GET /api/graph` returns the inventory
+as JSON. `GET /api/risk` returns deterministic rule-based findings. CI
+can grep both. Pre-deploy gate: "is any `publicAPI` endpoint serving
+with `authType: none`?" returns a list and exits non-zero.
+
+**Live ops.** Toggle Live Pulse and Atlas re-probes every 15 seconds,
+coloring endpoints green / amber / red. When on-call says "the embed
+service is flaky," the map tells you which deployment, which model,
+and how many agents depend on it.
+
+**Zero-infrastructure evaluation.** `bin/atlas-demo` spins up mock
+Ollama, vLLM, and Qdrant on loopback in one command. Useful for
+teaching agent architecture, evaluating Atlas, or proving a UI change
+works without touching prod.
+
+The throughline: every concept in an LLM stack (model, deployment,
+endpoint, RAG pipeline, vector index, tool, agent, safety policy) has
+one canonical place to look. Read once, link forever.
+
 ## What you can actually do once it is open
 
 - **See the stack as one picture.** Endpoints → Deployments → Models →
