@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/nicholas-kloster/nuclide-atlas-frontend:0.2.0
+          image: ghcr.io/nuclide-research/nuclide-atlas-frontend:0.2.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000

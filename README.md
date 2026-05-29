@@ -7,10 +7,10 @@
 # Nuclide Atlas
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/v/release/Nicholas-Kloster/nuclide-atlas)](https://github.com/Nicholas-Kloster/nuclide-atlas/releases)
-[![Release pipeline](https://github.com/Nicholas-Kloster/nuclide-atlas/actions/workflows/release.yml/badge.svg)](https://github.com/Nicholas-Kloster/nuclide-atlas/actions/workflows/release.yml)
-[![ghcr.io](https://img.shields.io/badge/ghcr.io-published-2db2bf?logo=docker&logoColor=white)](https://github.com/Nicholas-Kloster/nuclide-atlas/pkgs/container/nuclide-atlas-backend)
-[![Stars](https://img.shields.io/github/stars/Nicholas-Kloster/nuclide-atlas)](https://github.com/Nicholas-Kloster/nuclide-atlas/stargazers)
+[![Release](https://img.shields.io/github/v/release/nuclide-research/nuclide-atlas)](https://github.com/nuclide-research/nuclide-atlas/releases)
+[![Release pipeline](https://github.com/nuclide-research/nuclide-atlas/actions/workflows/release.yml/badge.svg)](https://github.com/nuclide-research/nuclide-atlas/actions/workflows/release.yml)
+[![ghcr.io](https://img.shields.io/badge/ghcr.io-published-2db2bf?logo=docker&logoColor=white)](https://github.com/nuclide-research/nuclide-atlas/pkgs/container/nuclide-atlas-backend)
+[![Stars](https://img.shields.io/github/stars/nuclide-research/nuclide-atlas)](https://github.com/nuclide-research/nuclide-atlas/stargazers)
 
 **See any LLM stack as a graph.** Atlas finds the LLM services you are
 already running, draws them as a map, and lets you click anything to
@@ -50,7 +50,7 @@ becomes the documentation.
 ## Try it in 30 seconds, no infrastructure required
 
 ```bash
-git clone https://github.com/Nicholas-Kloster/nuclide-atlas.git
+git clone https://github.com/nuclide-research/nuclide-atlas.git
 cd nuclide-atlas
 bin/atlas-demo            # spawns mock Ollama / vLLM / Qdrant on loopback
                           # then runs bin/atlas-bootstrap
@@ -66,11 +66,11 @@ bin/atlas-bootstrap       # auto-discovers everything Atlas can see
 ### Or pull the published images
 
 ```bash
-docker pull ghcr.io/nicholas-kloster/nuclide-atlas-backend:latest
-docker pull ghcr.io/nicholas-kloster/nuclide-atlas-frontend:latest
+docker pull ghcr.io/nuclide-research/nuclide-atlas-backend:latest
+docker pull ghcr.io/nuclide-research/nuclide-atlas-frontend:latest
 ```
 
-Multi-arch (amd64, arm64). See [Releases](https://github.com/Nicholas-Kloster/nuclide-atlas/releases) for tagged versions.
+Multi-arch (amd64, arm64). See [Releases](https://github.com/nuclide-research/nuclide-atlas/releases) for tagged versions.
 
 That command:
 
@@ -168,7 +168,7 @@ hosts you put in the config or hand to a probe. It does not scan, it
 does not move laterally, and it does not call home.
 
 For external discovery of LLM infrastructure you do not own, use
-[aimap](https://github.com/Nicholas-Kloster/aimap). Atlas reads its
+[aimap](https://github.com/nuclide-research/aimap). Atlas reads its
 JSON output if you want to pipe one into the other.
 
 ## Architecture

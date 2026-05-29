@@ -61,8 +61,8 @@ stack as a graph." Three entry points cover the spectrum:
 - Config layout split: `config/atlas.example.yaml` committed,
   `config/atlas.yaml` gitignored (discovered, host-specific).
 - Container images:
-  `ghcr.io/nicholas-kloster/nuclide-atlas-backend:0.2.0`,
-  `ghcr.io/nicholas-kloster/nuclide-atlas-frontend:0.2.0`. Multi-arch.
+  `ghcr.io/nuclide-research/nuclide-atlas-backend:0.2.0`,
+  `ghcr.io/nuclide-research/nuclide-atlas-frontend:0.2.0`. Multi-arch.
 
 ## [v0.1.0] - 2026-05-18
 
